@@ -159,13 +159,6 @@ git push origin main
    - List tasks: `http://localhost:5000/tasks`
    - Add task: `http://localhost:5000/calc/add/<task_name>`
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-```
-
-This `README.md` file provides detailed instructions on how to set up, run, and test the TaskManagerApp, along with Docker and GitHub Actions configurations. Adjust the repository URL and any other placeholders as needed.
 
 ## License
 
