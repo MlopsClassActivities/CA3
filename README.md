@@ -1,141 +1,171 @@
 
 # Class Activity #01: TaskManagerApp
 
-## Overview
+```markdown
+# TaskManagerApp with Flask and Docker
 
-TaskManagerApp is a simple command-line task manager application that allows users to add, list, and delete tasks. This project is designed to demonstrate basic software development practices including branching, feature implementation, and continuous integration using GitHub Actions.
+This project demonstrates a simple task management application using Flask, Docker, and GitHub Actions for CI/CD. The application exposes endpoints to manage tasks and is containerized using Docker.
 
 ## Features
 
-1. **Add Task**: Add a new task to the task list.
-2. **List Tasks**: Display all the tasks in the task list.
-3. **Delete Task**: Remove a specified task from the task list.
+- **Task Management**: Add and list tasks.
+- **Flask Web Application**: Simple web server to handle HTTP requests.
+- **Dockerized**: Application containerized for easy deployment.
+- **GitHub Actions**: Automated CI/CD pipeline to build and push Docker images to Docker Hub.
 
-## Project Structure
+## Endpoints
+
+- **List Tasks**: `GET /tasks`
+- **Add Task**: `GET /calc/add/<task_name>`
+
+## Prerequisites
+
+- Docker
+- Docker Hub account
+- GitHub account
+
+## Setup
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/your-username/TaskManagerApp.git
+cd TaskManagerApp
 ```
-CA1/
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-├── CA1/
+
+### Flask Application Structure
+
+```
+TaskManagerApp/
+├── app/
 │   ├── __init__.py
-│   ├── main.py
-│   └── tasks.py
+│   ├── routes.py
+│   └── task_manager/
+│       ├── __init__.py
+│       └── tasks.py
 ├── tests/
 │   └── test_tasks.py
-├── .gitignore
-├── README.md
-└── requirements.txt
+├── Dockerfile
+├── .dockerignore
+├── requirements.txt
+└── README.md
 ```
-- `CA1/main.py`: The main entry point of the application.
-- `CA1/tasks.py`: Contains the `TaskManager` class with methods to add, list, and delete tasks.
-- `tests/test_tasks.py`: Unit tests for the `TaskManager` class.
-- `.github/workflows/ci.yml`: GitHub Actions workflow for continuous integration.
 
-## Installation
+### Install Dependencies
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/your-username/CA1.git
-    cd CA1
-    ```
-
-2. Create a virtual environment and activate it:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
-
-3. Install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-Run the application:
 ```bash
-python -m CA1.main
+pip install -r requirements.txt
 ```
 
-You will be presented with a menu to add, list, or delete tasks.
+### Run the Flask Application
 
-## Development
-
-### Branching Strategy
-
-Each feature is developed in its own branch. The branches are named according to the member's roll number:
-
-- `main`: Main branch containing the project scaffolding.
-- `member1_roll_no`: Branch for Member 1's feature implementation (Add Task).
-- `member2_roll_no`: Branch for Member 2's feature implementation (List Tasks).
-- `member3_roll_no`: Branch for Member 3's feature implementation (Delete Task).
-
-### Implementing Features
-
-1. **Member 1 (Add Task)**:
-    - Switch to your branch:
-        ```bash
-        git checkout member1_roll_no
-        ```
-    - Implement the feature in `CA1/tasks.py`.
-    - Commit and push your changes:
-        ```bash
-        git add .
-        git commit -m "Implemented add task feature"
-        git push origin member1_roll_no
-        ```
-
-2. **Member 2 (List Tasks)**:
-    - Switch to your branch:
-        ```bash
-        git checkout member2_roll_no
-        ```
-    - Implement the feature in `CA1/tasks.py`.
-    - Commit and push your changes:
-        ```bash
-        git add .
-        git commit -m "Implemented list tasks feature"
-        git push origin member2_roll_no
-        ```
-
-3. **Member 3 (Delete Task)**:
-    - Switch to your branch:
-        ```bash
-        git checkout member3_roll_no
-        ```
-    - Implement the feature in `CA1/tasks.py`.
-    - Commit and push your changes:
-        ```bash
-        git add .
-        git commit -m "Implemented delete task feature"
-        git push origin member3_roll_no
-        ```
-
-### Continuous Integration
-
-This project uses GitHub Actions for continuous integration. The workflow is defined in `.github/workflows/ci.yml` and runs on every push and pull request. It includes the following steps:
-
-- Check out the code.
-- Set up Python.
-- Install dependencies.
-- Lint the code with flake8.
-- Run unit tests with pytest.
-
-## Testing
-
-To run the tests locally:
 ```bash
-pytest
+export FLASK_APP=app
+export FLASK_RUN_HOST=0.0.0.0
+flask run
 ```
 
-## Contributing
+### Access the Application
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes and commit them (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a pull request.
+- List tasks: `http://localhost:5000/tasks`
+- Add task: `http://localhost:5000/calc/add/<task_name>`
+
+## Docker Instructions
+
+### Build Docker Image
+
+```bash
+docker build -t dkay7223/ca3:latest .
+```
+
+### Run Docker Container
+
+```bash
+docker run -p 5000:5000 dkay7223/ca3:latest
+```
+
+### Pull Docker Image from Docker Hub
+
+```bash
+docker pull dkay7223/ca3:latest
+```
+
+### Run Docker Image from Docker Hub
+
+```bash
+docker run -p 5000:5000 dkay7223/ca3:latest
+```
+
+## GitHub Actions CI/CD
+
+### Setup GitHub Actions Workflow
+
+Create a `.github/workflows/docker-image.yml` file:
+
+```yaml
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: dkay7223/ca3:latest
+```
+
+### Add GitHub Secrets
+
+- `DOCKER_USERNAME`: Your Docker Hub username.
+- `DOCKER_PASSWORD`: Your Docker Hub password.
+
+### Push Changes to GitHub
+
+```bash
+git add .
+git commit -m "Add Flask app and Docker setup"
+git push origin main
+```
+
+## Testing the Application
+
+1. **Pull and run the Docker image:**
+   ```bash
+   docker pull dkay7223/ca3:latest
+   docker run -p 5000:5000 dkay7223/ca3:latest
+   ```
+
+2. **Access the application:**
+   - List tasks: `http://localhost:5000/tasks`
+   - Add task: `http://localhost:5000/calc/add/<task_name>`
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+```
+
+This `README.md` file provides detailed instructions on how to set up, run, and test the TaskManagerApp, along with Docker and GitHub Actions configurations. Adjust the repository URL and any other placeholders as needed.
 
 ## License
 
